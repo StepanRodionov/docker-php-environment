@@ -1,11 +1,14 @@
 FROM php:7.3-fpm
 
+MAINTAINER Stepan Rodionov
+
 ARG PHP_VERSION=7.3
 ENV PHP_VERSION "$PHP_VERSION"
 
 # установка системных библиотек (обязательно должна быть выполнена в одном RUN)
 RUN apt-get update \
     && apt-get -y install \
+        software-properties-common \
         curl \
         git \
         sudo \
@@ -26,8 +29,7 @@ RUN apt-get update \
     && apt-get clean && rm -r /var/lib/apt/lists/*
 
 # добавление php репозитория
-RUN LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php \
-    && apt-get update \
+RUN apt-get update \
     # установка стандартных php библиотек
     && apt-get -y install   php${PHP_VERSION}-fpm \
                             php${PHP_VERSION}-mbstring \
