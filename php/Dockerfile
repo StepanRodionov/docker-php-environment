@@ -1,21 +1,19 @@
 FROM php:7.3-fpm
 
-MAINTAINER Stepan Rodionov
-
-ARG PHP_VERSION=7.3
-ENV PHP_VERSION "$PHP_VERSION"
-
-# установка системных библиотек (обязательно должна быть выполнена в одном RUN)
-RUN apt-get update \
-    && apt-get -y install \
-        software-properties-common \
-        curl \
+RUN apt-get update && apt-get install -y \
+		software-properties-common \
+		curl \
         git \
         sudo \
-        bash-completion \
+		bash-completion \
         libxml2-dev \
         libpq-dev \
         libmemcached-dev \
+		libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+		libzip-dev \
+		libcurl4-gnutls-dev \
         vim \
         nano \
         dnsutils \
@@ -25,28 +23,23 @@ RUN apt-get update \
         zip \
         unzip \
         mc \
-        wget \
-    && apt-get clean && rm -r /var/lib/apt/lists/*
+        wget
 
-# добавление php репозитория
-RUN apt-get update \
-    # установка стандартных php библиотек
-    && apt-get -y install   php${PHP_VERSION}-fpm \
-                            php${PHP_VERSION}-mbstring \
-                            php${PHP_VERSION}-opcache \
-                            php${PHP_VERSION}-soap \
-                            php${PHP_VERSION}-mysql \
-                            php${PHP_VERSION}-zip \
-                            php${PHP_VERSION}-redis \
-                            php${PHP_VERSION}-curl \
-                            php${PHP_VERSION}-xml \
-                            php${PHP_VERSION}-bcmath \
-                            php${PHP_VERSION}-intl \
-                            php${PHP_VERSION}-gd \
-                            php${PHP_VERSION}-dev \
-                            php-xdebug \
-                            php-memcache \
-    && apt-get clean && rm -r /var/lib/apt/lists/*
+RUN docker-php-ext-install -j$(nproc) iconv \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd \
+	&& docker-php-ext-install -j$(nproc) opcache \
+    && docker-php-ext-install -j$(nproc) soap \
+    && docker-php-ext-install -j$(nproc) pdo_mysql \
+    && docker-php-ext-install -j$(nproc) zip \
+    && docker-php-ext-install -j$(nproc) curl \
+    && docker-php-ext-install -j$(nproc) xml \
+    && docker-php-ext-install -j$(nproc) bcmath \
+    && docker-php-ext-install -j$(nproc) intl \
+    && docker-php-ext-install -j$(nproc) dev
+
+RUN pecl install -o -f redis \
+	&& docker-php-ext-enable -j$(nproc) redis
 
 # Меняем часовой пояс
 RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
@@ -54,7 +47,3 @@ RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 # устанавливаем композер и плагин для асинхронной загрузки пакетов
 RUN curl -L --silent --show-error https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && /usr/local/bin/composer global require hirak/prestissimo
 
-
-WORKDIR /srv/www
-
-EXPOSE 9000
