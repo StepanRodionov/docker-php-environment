@@ -1,5 +1,10 @@
 FROM php:7.3-fpm
 
+USER root
+
+ARG PHP_VERSION=7.3
+ENV PHP_VERSION "$PHP_VERSION"
+
 RUN apt-get update && apt-get install -y \
 		software-properties-common \
 		curl \
@@ -25,6 +30,7 @@ RUN apt-get update && apt-get install -y \
         mc \
         wget
 
+
 RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
@@ -35,11 +41,23 @@ RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-install -j$(nproc) curl \
     && docker-php-ext-install -j$(nproc) xml \
     && docker-php-ext-install -j$(nproc) bcmath \
-    && docker-php-ext-install -j$(nproc) intl \
-    && docker-php-ext-install -j$(nproc) dev
+    && docker-php-ext-install -j$(nproc) intl
 
 RUN pecl install -o -f redis \
-	&& docker-php-ext-enable -j$(nproc) redis
+	&& docker-php-ext-enable redis.so
+
+#	https://stackoverflow.com/questions/49907308/installing-xdebug-in-docker
+RUN yes | pecl install xdebug \
+    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+#	Find how to install
+#	&& pecl install -o -f memcache \
+#	&& docker-php-ext-enable memcache.so \
+#	try https://stackoverflow.com/questions/40894385/how-can-i-install-the-php-memcached-extension-on-dockers-php7-alpine-image
+#
+#	and php${PHP_VERSION}-dev
 
 # Меняем часовой пояс
 RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
