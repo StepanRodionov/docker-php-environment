@@ -47,10 +47,7 @@ RUN pecl install -o -f redis \
 	&& docker-php-ext-enable redis.so
 
 #	https://stackoverflow.com/questions/49907308/installing-xdebug-in-docker
-RUN yes | pecl install xdebug \
-    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
-    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
-    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
+RUN yes | pecl install xdebug
 
 #	Find how to install
 #	&& pecl install -o -f memcache \
@@ -65,3 +62,22 @@ RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 # устанавливаем композер и плагин для асинхронной загрузки пакетов
 RUN curl -L --silent --show-error https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && /usr/local/bin/composer global require hirak/prestissimo
 
+
+# копируем конфиги
+COPY php-${PHP_VERSION}.ini         /etc/php/${PHP_VERSION}/fpm/php.ini
+COPY conf.d/                        /etc/php/${PHP_VERSION}/fpm/conf.d/
+COPY php-fpm.d/                     /etc/php/${PHP_VERSION}/fpm/pool.d/
+COPY php-fpm-${PHP_VERSION}.conf    /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+COPY php-${PHP_VERSION}.ini         /etc/php/${PHP_VERSION}/cli/php.ini
+COPY conf.d/                        /etc/php/${PHP_VERSION}/cli/conf.d/
+#   Not yet
+#COPY .bashrc .inputrc .nanorc       /etc/skel/
+#COPY .bashrc .inputrc .nanorc       /root/
+
+WORKDIR /srv/www
+
+# создаём директорию для сессий php
+RUN mkdir -p /sessions \
+  && mkdir -p /srv/www/.composer /srv/www/common
+
+EXPOSE 9000
