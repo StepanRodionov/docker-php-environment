@@ -2,8 +2,9 @@ FROM php:7.3-fpm
 
 USER root
 
-ARG PHP_VERSION=7.3
-ENV PHP_VERSION "$PHP_VERSION"
+# because PHP_VERSION is set by parent image
+ARG PHP_VER=7.3
+ENV PHP_VER "$PHP_VER"
 
 RUN apt-get update && apt-get install -y \
 		software-properties-common \
@@ -46,15 +47,17 @@ RUN docker-php-ext-install -j$(nproc) iconv \
 RUN pecl install -o -f redis \
 	&& docker-php-ext-enable redis.so
 
-#	https://stackoverflow.com/questions/49907308/installing-xdebug-in-docker
-RUN yes | pecl install xdebug
+#	xdebug for php 7.3 is beta
+RUN apt-get update && apt-get install -y wget git unzip \
+    && pecl install xdebug-2.7.0RC2 \
+    && docker-php-ext-enable xdebug
 
 #	Find how to install
 #	&& pecl install -o -f memcache \
 #	&& docker-php-ext-enable memcache.so \
 #	try https://stackoverflow.com/questions/40894385/how-can-i-install-the-php-memcached-extension-on-dockers-php7-alpine-image
 #
-#	and php${PHP_VERSION}-dev
+#	and php${PHP_VER}-dev
 
 # Меняем часовой пояс
 RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
@@ -64,12 +67,12 @@ RUN curl -L --silent --show-error https://getcomposer.org/installer | php && mv 
 
 
 # копируем конфиги
-COPY php-${PHP_VERSION}.ini         /etc/php/${PHP_VERSION}/fpm/php.ini
-COPY conf.d/                        /etc/php/${PHP_VERSION}/fpm/conf.d/
-COPY php-fpm.d/                     /etc/php/${PHP_VERSION}/fpm/pool.d/
-COPY php-fpm-${PHP_VERSION}.conf    /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
-COPY php-${PHP_VERSION}.ini         /etc/php/${PHP_VERSION}/cli/php.ini
-COPY conf.d/                        /etc/php/${PHP_VERSION}/cli/conf.d/
+COPY php-${PHP_VER}.ini         /etc/php/${PHP_VER}/fpm/php.ini
+COPY conf.d/                        /etc/php/${PHP_VER}/fpm/conf.d/
+COPY php-fpm.d/                     /etc/php/${PHP_VER}/fpm/pool.d/
+COPY php-fpm-${PHP_VER}.conf    /etc/php/${PHP_VER}/fpm/php-fpm.conf
+COPY php-${PHP_VER}.ini         /etc/php/${PHP_VER}/cli/php.ini
+COPY conf.d/                        /etc/php/${PHP_VER}/cli/conf.d/
 #   Not yet
 #COPY .bashrc .inputrc .nanorc       /etc/skel/
 #COPY .bashrc .inputrc .nanorc       /root/
