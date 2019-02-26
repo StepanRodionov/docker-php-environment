@@ -44,11 +44,10 @@ RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-install -j$(nproc) bcmath \
     && docker-php-ext-install -j$(nproc) intl
 
-RUN pecl install -o -f redis \
-	&& docker-php-ext-enable redis.so
-
 #	xdebug for php 7.3 is beta
-RUN apt-get update && apt-get install -y wget git unzip \
+RUN pecl install -o -f redis \
+	&& docker-php-ext-enable redis.so \
+	&& pecl install apcu \
     && pecl install xdebug-2.7.0RC2 \
     && docker-php-ext-enable xdebug
 

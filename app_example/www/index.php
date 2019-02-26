@@ -1,3 +1,4 @@
 <?php
 
-echo 'Hello, world!';
+//  just test of php extensions included
+phpinfo();
