@@ -3,21 +3,18 @@ version: '2'
 # Список наших сервисов (контейнеров)
 services:
   nginx:
-    # у нас свой образ для PHP, указываем путь к нему и говорим что его надо собрать
-    build: ../nginx
+    image: rodionoff/nginx
     # маршрутизируем порты
     ports:
       - "80:80"
       - "443:443"
-    # монтируем директории, слева директории на основной машине, справа - куда они монтируются в контейнере
     volumes_from:
       - php
     # nginx должен общаться с php контейнером
     links:
       - php
   php:
-    # у нас свой образ для PHP, указываем путь к нему и говорим что его надо собрать
-    build: ../php
+    image: rodionoff/php-fpm
     # этот образ будет общаться с mysql
     links:
       - mysql
@@ -28,10 +25,15 @@ services:
       - mysql
   mysql:
     image: mysql:8
-    ports:
-      - "3306:3306"
+    # Порты тоже не нужны: снаружи в БД ходить не будем
+    #ports:
+    #  - "33061:3306"
+    # Не монтируем sql, т.к это приводит к проблемам на винде. На prod все равно будет bare metal
     #volumes:
     #    - ./mysql:/var/lib/mysql
+    # чиним изменившийся режим авторизации в MySQL 8
+    command: --default-authentication-plugin=mysql_native_password
     # задаем пароль для root пользователя
     environment:
       MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: myapp
