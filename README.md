@@ -38,7 +38,7 @@ command: --default-authentication-plugin=mysql_native_password
 Она должна вернуть изменившийся в mysql 8 режим аутентификации, чтобы при запуске приложения не возникала ошибка SQLSTATE[HY000] [2002] Connection refused. Однако на некоторых системах это по-прежнему возникает. Для того чтобы устранить ее после запуска необходимо сделать следующее:
 Попасть в контейнер с помощью команды.
 ```bash
-docker exec -it #mysql_container_name# bash
+docker exec -it your_mysql_container_name bash
 ```
 далее в консоль mysql:
 ```bash
