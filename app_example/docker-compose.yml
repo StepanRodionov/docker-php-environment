@@ -32,6 +32,7 @@ services:
     #volumes:
     #    - ./mysql:/var/lib/mysql
     # чиним изменившийся режим авторизации в MySQL 8
+    # по-видимому не работает - проверить и починить!
     command: --default-authentication-plugin=mysql_native_password
     # задаем пароль для root пользователя
     environment:
