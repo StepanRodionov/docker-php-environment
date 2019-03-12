@@ -66,12 +66,12 @@ RUN curl -L --silent --show-error https://getcomposer.org/installer | php && mv 
 
 
 # копируем конфиги
-COPY ../configs/${PHP_VER}/php.ini            /etc/php/${PHP_VER}/fpm/php.ini
-COPY ../configs/conf.d                        /etc/php/${PHP_VER}/fpm/conf.d/
-COPY ../configs/php-fpm.d                     /etc/php/${PHP_VER}/fpm/pool.d/
-COPY ../configs/${PHP_VER}/php-fpm.conf       /etc/php/${PHP_VER}/fpm/php-fpm.conf
-COPY ../configs/${PHP_VER}/php.ini            /etc/php/${PHP_VER}/cli/php.ini
-COPY ../configs/conf.d                        /etc/php/${PHP_VER}/cli/conf.d/
+COPY configs/${PHP_VER}/php.ini            /etc/php/${PHP_VER}/fpm/php.ini
+COPY configs/conf.d                        /etc/php/${PHP_VER}/fpm/conf.d/
+COPY configs/php-fpm.d                     /etc/php/${PHP_VER}/fpm/pool.d/
+COPY configs/${PHP_VER}/php-fpm.conf       /etc/php/${PHP_VER}/fpm/php-fpm.conf
+COPY configs/${PHP_VER}/php.ini            /etc/php/${PHP_VER}/cli/php.ini
+COPY configs/conf.d                        /etc/php/${PHP_VER}/cli/conf.d/
 #   Not yet
 #COPY .bashrc .inputrc .nanorc       /etc/skel/
 #COPY .bashrc .inputrc .nanorc       /root/
