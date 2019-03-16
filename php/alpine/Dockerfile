@@ -29,6 +29,7 @@ RUN apk update \
 RUN apk add --no-cache \
         alpine-sdk \
         curl \
+        curl-dev \
         git \
         sudo \
         bash-completion \
@@ -36,6 +37,8 @@ RUN apk add --no-cache \
         libmemcached-dev \
         libpng-dev \
         libzip-dev \
+        g++ \
+        icu-dev \
         vim \
         nano \
         net-tools \
@@ -52,15 +55,15 @@ RUN docker-php-ext-install -j$(nproc) iconv \
 	&& docker-php-ext-install -j$(nproc) opcache \
     && docker-php-ext-install -j$(nproc) soap \
     && docker-php-ext-install -j$(nproc) pdo_mysql \
-    && docker-php-ext-install -j$(nproc) zip
+    && docker-php-ext-install -j$(nproc) zip \
+    && docker-php-ext-install -j$(nproc) curl \
+    && docker-php-ext-install -j$(nproc) xml \
+    && docker-php-ext-install -j$(nproc) bcmath
+    && docker-php-ext-install -j$(nproc) intl
 
 ####################################################
 #       WORKS BEFORE HERE
 
-RUN docker-php-ext-install -j$(nproc) curl \
-    && docker-php-ext-install -j$(nproc) xml \
-    && docker-php-ext-install -j$(nproc) bcmath \
-    && docker-php-ext-install -j$(nproc) intl
 
 #	xdebug for php 7.3 is beta
 RUN pecl install -o -f redis \
