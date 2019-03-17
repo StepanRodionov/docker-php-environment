@@ -58,19 +58,22 @@ RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-install -j$(nproc) zip \
     && docker-php-ext-install -j$(nproc) curl \
     && docker-php-ext-install -j$(nproc) xml \
-    && docker-php-ext-install -j$(nproc) bcmath
+    && docker-php-ext-install -j$(nproc) bcmath \
     && docker-php-ext-install -j$(nproc) intl
 
 ####################################################
 #       WORKS BEFORE HERE
 
 
-#	xdebug for php 7.3 is beta
-RUN pecl install -o -f redis \
+# https://stackoverflow.com/a/45976380/11217535
+RUN apk add --no-cache --update --virtual buildDeps autoconf \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && pecl install -o -f redis \
     && docker-php-ext-enable redis.so \
     && pecl install apcu \
-    && pecl install xdebug-2.7.0RC2 \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-enable apcu.so \
+    && apk del buildDeps
 
 # Меняем часовой пояс
 RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime
