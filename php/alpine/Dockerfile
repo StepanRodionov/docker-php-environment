@@ -61,9 +61,6 @@ RUN docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-install -j$(nproc) bcmath \
     && docker-php-ext-install -j$(nproc) intl
 
-####################################################
-#       WORKS BEFORE HERE
-
 
 # https://stackoverflow.com/a/45976380/11217535
 RUN apk add --no-cache --update --virtual buildDeps autoconf \
