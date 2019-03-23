@@ -48,7 +48,8 @@ RUN docker-php-ext-install -j$(nproc) iconv \
 RUN pecl install -o -f redis \
 	&& docker-php-ext-enable redis.so \
 	&& pecl install apcu \
-    && pecl install xdebug-2.7.0RC2 \
+    && pecl install xdebug \
+    && docker-php-ext-enable apcu.so \
     && docker-php-ext-enable xdebug
 
 #	Find how to install
