@@ -38,6 +38,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: myapp
- networks:
-    default:
-      name: project.dev
+networks:
+  default:
+    name: project.dev
