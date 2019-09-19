@@ -1,5 +1,5 @@
 # Версия docker-compose
-version: '2'
+version: '3.6'
 # Список наших сервисов (контейнеров)
 services:
   nginx:
@@ -8,8 +8,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes_from:
-      - php
+    volumes:
+      - ./www:/var/www/html
     # nginx должен общаться с php контейнером
     links:
       - php
@@ -38,6 +38,3 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: myapp
-networks:
-  default:
-    name: project.dev
