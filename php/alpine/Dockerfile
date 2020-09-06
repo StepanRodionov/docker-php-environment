@@ -1,9 +1,9 @@
-FROM php:7.3-fpm-alpine
+FROM php:7.4-fpm-alpine
 
 USER root
 
 # because PHP_VERSION is set by parent image
-ARG PHP_VER=7.3
+ARG PHP_VER=7.4
 ENV PHP_VER "$PHP_VER"
 
 # Missing:

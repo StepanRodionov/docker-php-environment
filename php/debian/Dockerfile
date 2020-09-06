@@ -1,9 +1,9 @@
-FROM php:7.3-fpm
+FROM php:7.4-fpm
 
 USER root
 
 # because PHP_VERSION is set by parent image
-ARG PHP_VER=7.3
+ARG PHP_VER=7.4
 ENV PHP_VER "$PHP_VER"
 
 RUN apt-get update && apt-get install -y \
@@ -51,13 +51,6 @@ RUN pecl install -o -f redis \
     && pecl install xdebug \
     && docker-php-ext-enable apcu.so \
     && docker-php-ext-enable xdebug
-
-#	Find how to install
-#	&& pecl install -o -f memcache \
-#	&& docker-php-ext-enable memcache.so \
-#	try https://stackoverflow.com/questions/40894385/how-can-i-install-the-php-memcached-extension-on-dockers-php7-alpine-image
-#
-#	and php${PHP_VER}-dev
 
 # Меняем часовой пояс
 RUN sudo ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime

@@ -1,40 +1,43 @@
-# Версия docker-compose
-version: '3.6'
-# Список наших сервисов (контейнеров)
+version: '3.8'
+
+volumes:
+  pg-data:
+  redis-data:
+
 services:
   nginx:
     image: rodionoff/nginx
-    # маршрутизируем порты
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - my_app_net
     volumes:
       - ./www:/var/www/html
-    # nginx должен общаться с php контейнером
-    links:
-      - php
   php:
     image: rodionoff/php-fpm
-    # этот образ будет общаться с mysql
-    links:
-      - mysql
-    # монтируем директорию с проектами
     volumes:
       - ./www:/var/www/html
     depends_on:
-      - mysql
-  mysql:
-    image: mysql:8
-    # Порты тоже не нужны: снаружи в БД ходить не будем
-    #ports:
-    #  - "33061:3306"
-    # Не монтируем sql, т.к это приводит к проблемам на винде. На prod все равно будет bare metal
-    #volumes:
-    #    - ./mysql:/var/lib/mysql
-    # чиним изменившийся режим авторизации в MySQL 8
-    # по-видимому не работает - проверить и починить!
-    command: --default-authentication-plugin=mysql_native_password
-    # задаем пароль для root пользователя
+      - postgres
+    networks:
+      - my_app_net
+  postgres:
+    image: rodionoff/postgres
+    volumes:
+      - "pg-data:/var/lib/postgresql/data"
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: myapp
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+      - POSTGRES_DB=public
+    networks:
+      - my_app_net
+  redis:
+    image: rodionoff/redis
+    volumes:
+      - "redis-data:/data"
+    networks:
+      - my_app_net
+
+networks:
+  my_app_net:
