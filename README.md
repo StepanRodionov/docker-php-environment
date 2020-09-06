@@ -30,26 +30,4 @@ TODO
 
 TODO
 
-## Описание mysql образа
-
-В docker-compose.yml указана следующая строка:
-```yml
-command: --default-authentication-plugin=mysql_native_password
-```
-Она должна вернуть изменившийся в mysql 8 режим аутентификации, чтобы при запуске приложения не возникала ошибка SQLSTATE[HY000] [2002] Connection refused. Однако на некоторых системах это по-прежнему возникает. Для того чтобы устранить ее после запуска необходимо сделать следующее:
-Попасть в контейнер с помощью команды.
-```bash
-docker exec -it your_mysql_container_name bash
-```
-далее в консоль mysql:
-```bash
-mysql -u root -p
-```
-после чего ввести настроенный в docker-compose.yml пароль и запустить в консоли mysql такой скрипт:
-```mysql
-ALTER USER 'root'@'localhost'
-  IDENTIFIED WITH mysql_native_password
-  BY 'password';
-```
-
-TODO - починить это!!!
+## Описание postgres образа
